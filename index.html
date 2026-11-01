@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="notranslate" translate="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>多 Agent 投放作战室 · HenryHwang-AI</title>
+  <meta name="description" content="离线可运行的多 Agent 投放作战室演示。洞察、创意、人工闸门、合规与实验设计，合成品牌，无需密钥。" />
+  <meta name="theme-color" content="#07080f" />
+  <meta name="google" content="notranslate" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/warroom.css" />
+</head>
+<body>
+  <a class="skip" href="#workspace">跳到作战室</a>
+  <div class="shell">
+    <header class="top">
+      <div class="brand">
+        <svg class="mark" width="36" height="36" viewBox="0 0 36 36" aria-hidden="true">
+          <rect width="36" height="36" rx="10" fill="#10121b" stroke="rgba(255,255,255,.08)" />
+          <path d="M8 18h6M22 18h6M18 8v6M18 22v6" stroke="#22d3ee" stroke-width="1.6" stroke-linecap="round" />
+          <circle cx="18" cy="18" r="3.2" fill="#a855f7" />
+          <circle cx="8" cy="18" r="1.7" fill="#22d3ee" />
+          <circle cx="28" cy="18" r="1.7" fill="#22d3ee" />
+          <circle cx="18" cy="8" r="1.7" fill="#c4b5fd" />
+          <circle cx="18" cy="28" r="1.7" fill="#c4b5fd" />
+        </svg>
+        <div>
+          <p class="kicker">HenryHwang-AI · Portfolio</p>
+          <h1>多 Agent 投放作战室</h1>
+        </div>
+      </div>
+      <nav aria-label="页内">
+        <a href="#workspace">作战室</a>
+        <a href="#pm">产品判断</a>
+      </nav>
+      <p class="run-status" id="runStatus" role="status" data-tone="idle">待命</p>
+    </header>
+
+    <section class="hero">
+      <h2>一条简报，四个专职 Agent，一道必须由人按下的闸门。</h2>
+      <p class="lede">投放前的准备被收成看得见的状态机。编排器只搬运卡片，不写文案。品牌、样本和价格全部是合成的，页面不请求网络，也不需要密钥。</p>
+      <ul class="pills">
+        <li>合成数据</li>
+        <li>离线可运行</li>
+        <li>无密钥</li>
+        <li>状态机可见</li>
+        <li>尊重减少动态效果</li>
+      </ul>
+      <div class="flow" aria-hidden="true">
+        <span>洞察官</span><i>→</i>
+        <span>创意官</span><i>→</i>
+        <span class="human">人工闸门</span><i>→</i>
+        <span>合规官</span><i>→</i>
+        <span>分析官</span><i>→</i>
+        <span>任务包</span>
+      </div>
+    </section>
+
+    <div class="workspace" id="workspace">
+      <aside class="side">
+        <section class="block" aria-labelledby="briefHeading">
+          <h2 id="briefHeading">任务简报</h2>
+          <div id="briefList" class="brief-list" role="listbox" aria-label="选择简报" tabindex="0"></div>
+        </section>
+
+        <section class="block controls" aria-labelledby="ctrlHeading">
+          <h2 id="ctrlHeading">编排</h2>
+          <label class="switch" for="inject">
+            <input id="inject" type="checkbox" role="switch" />
+            <span class="switch-ui" aria-hidden="true"></span>
+            <span>
+              <span class="switch-title">注入合规失败</span>
+              <span class="switch-sub">把已命中的风险句从「观察」升为「驳回」，退回创意后再过闸门。不发明新的风险。</span>
+            </span>
+          </label>
+          <div class="row">
+            <button type="button" class="btn primary" id="runBtn">启动任务</button>
+            <button type="button" class="btn ghost" id="resetBtn">重置</button>
+          </div>
+          <label class="checkline" for="fast">
+            <input id="fast" type="checkbox" />
+            <span>快进动画</span>
+          </label>
+          <p class="hint" id="injectHint">只缩短等待，不改账本里的模型时间。注入对仍含风险句的稿子生效；若你已要求删掉这些句子，审查会通过，开关保持武装。</p>
+        </section>
+
+        <div id="briefDetail" class="brief-detail"></div>
+
+        <section class="block" aria-labelledby="ledgerHeading">
+          <h2 id="ledgerHeading">本跑账本</h2>
+          <div id="ledger" class="ledger"></div>
+          <p class="hint">演示计价：输入 ¥0.004 / 千 token，输出 ¥0.012 / 千 token。不是任何供应商的报价。人工等待单独计时。</p>
+        </section>
+      </aside>
+
+      <section class="stage" aria-label="状态机与产出">
+        <div class="machine">
+          <div class="machine-head">
+            <h2>状态机</h2>
+            <code class="phase" id="phaseCode">IDLE</code>
+          </div>
+          <div class="progress" aria-hidden="true"><span id="bar"></span></div>
+          <ol id="pipeline" class="pipeline"></ol>
+          <p id="loopNote" class="loop-note" hidden></p>
+          <p class="orch" id="orch"><span class="pulse-dot" aria-hidden="true"></span><span id="orchText">编排器待命。它不写文案，只决定下一张卡片交给谁。</span></p>
+        </div>
+        <div id="story" class="story"></div>
+        <section id="gate" class="gate" hidden aria-labelledby="gateTitle">
+          <p class="eyebrow">Human Gate</p>
+          <h3 id="gateTitle">创意已提交，合规尚未开始</h3>
+          <p id="gateCopy" class="meta-line"></p>
+          <label for="gateNote">给创意官的备注</label>
+          <textarea id="gateNote" maxlength="200"></textarea>
+          <div class="row">
+            <button type="button" class="btn warn" id="reviseBtn">要求修改</button>
+            <button type="button" class="btn primary" id="approveBtn">批准并送审</button>
+          </div>
+          <p class="hint">批准只代表你接受这个方向。它不会跳过合规，也不会创建投放计划。Ctrl 或 ⌘ + Enter 同样是批准。</p>
+        </section>
+        <section id="pack" class="pack" hidden aria-labelledby="packTitle"></section>
+      </section>
+    </div>
+
+    <section class="trace-wrap" aria-labelledby="traceHeading">
+      <div class="trace-head">
+        <h2 id="traceHeading">实时轨迹 <span id="traceCount">0</span></h2>
+        <a href="#pack" id="jumpPack" hidden>查看任务包</a>
+      </div>
+      <p class="trace-empty" id="traceEmpty">轨迹会写在这里。启动后按模型时间列出每次工具调用和状态迁移。人工停留用真实秒数，不混进模型墙钟。</p>
+      <ol id="trace" class="trace"></ol>
+    </section>
+
+    <section class="pm" id="pm">
+      <h2>产品判断</h2>
+      <p>这页不是模型秀。它把投放前的准备收成一条看得见的状态机，用来讲清楚多 Agent 到底买到了什么，以及人该站在哪一步。</p>
+
+      <h3>角色按职责切开</h3>
+      <p>四个角色吃不同的输入，也拒绝做别人的事。这样切，是为了失败时知道该重跑谁，而不是为了把一个提示词拆成四段语气。</p>
+      <ul>
+        <li>洞察官只产出标了「测量」或「推断」的假设，不写口号。</li>
+        <li>创意官只基于这些假设写角度，不给自己发合规通行证。</li>
+        <li>合规官只引用原句并判定，不改预算。</li>
+        <li>分析官只设计可以停下来的实验，不顺手加码承诺。</li>
+      </ul>
+      <p>编排器的产出是状态迁移和账本，字数为零。洞察卡片一旦锁定，回环就不会再为它付钱。</p>
+
+      <h3>同一批风险，两种处置</h3>
+      <p>合规官看到的命中句是同一批，写在每条简报的初稿里。默认阈值把它们记成观察项，任务包改用安全句，流水线不回环。打开「注入合规失败」之后，阈值升成驳回：创意官重做，人再看一次，合规再审一次。事实没有变，变的是策略。</p>
+      <p>功效、金融、医疗邻近类目更适合把严格处置做成默认，而不是演示开关。澄光和轨迹这两条简报就是这个原因被标成「适合演示回环」。</p>
+
+      <h3>成本和延迟买的是什么</h3>
+      <p id="costLine">顺利路径会多花 token，也会更慢。关键路径是串行的：创意依赖洞察，合规依赖已经批准的创意，实验依赖合规结论。一个角色内部的工具调用可以并行，演示里仍让它们先后出现，方便看清。</p>
+      <div class="table-wrap">
+        <table class="cmp" id="cmpTable">
+          <thead>
+            <tr>
+              <th>路径</th>
+              <th>模拟 token</th>
+              <th>模型墙钟</th>
+              <th>演示费用</th>
+              <th>人工闸门</th>
+              <th>可单点重跑</th>
+            </tr>
+          </thead>
+          <tbody id="cmpBody"></tbody>
+        </table>
+      </div>
+      <p id="saveLine"></p>
+      <p>人工在闸门前的停留单独计时，不算进模型墙钟。人的时间才是这条链路真正的关键路径，所以闸门只有一道，问的是方向，不是标点。</p>
+
+      <h3>闸门为什么在创意和合规之间</h3>
+      <p>这一步的判断主要是品味、品牌和任务是否匹配，不该由模型拍板。合规审查会花下一段 token，应该拿去审已经值得审的方向。</p>
+      <p>闸门不放在最后，是为了避免人读完一篇混好的长文才发现方向就错了。也不放在洞察之前，因为没有材料的审批只是直觉。生产环境还可以在合规通过之后、预算释放之前加第二道法务闸。这个演示故意只做产品闸，避免看起来像自动投放。</p>
+      <p>要求修改会把备注写成下一张创意卡片的约束，而不是丢进越来越长的聊天。批准写进轨迹，带任务编号，方便事后回答是谁在什么状态下放行的。驳回不会请人给一份已知有问题的稿子盖章，人看到的下一张卡片已经是修订稿。</p>
+
+      <h3>单 Agent 什么时候够用</h3>
+      <p>头脑风暴、内部草稿、没有外部投放风险的时候，一个模型更快也更便宜。句子一旦会进广告账户，混写的代价是：你无法只驳回其中一句，也证明不了洞察没有被口号污染。下面是当前简报如果一次生成，会长什么样。</p>
+      <details>
+        <summary>查看这条简报的单 Agent 混合输出</summary>
+        <p id="singleBody" class="blob"></p>
+      </details>
+
+      <h3>故意不交给系统的事</h3>
+      <ul>
+        <li>不登录投放账户，不创建计划，不改出价。</li>
+        <li>不把合规结论当成法律意见。规则是为演示抽象的。</li>
+        <li>不释放预算。</li>
+        <li>不生成真实用户画像。简报里的样本都是虚构的。</li>
+      </ul>
+
+      <h3>如果进入生产，还要补什么</h3>
+      <ul>
+        <li>每张卡片的结构校验，不合格就不能迁移状态。</li>
+        <li>从历史驳回整理评估集，看合规官会不会放过已知坏句。</li>
+        <li>编排器幂等，避免闸门被双击造成两次送审。</li>
+        <li>权限：谁能批准，敏感类目要不要双人。</li>
+        <li>观测：步骤耗时、驳回率、人在闸门的等待，以及任务包导出后有没有被改。</li>
+      </ul>
+      <p>这些没有做进演示。演示要证明的是状态机和闸门，不是一个投放平台。</p>
+    </section>
+  </div>
+  <p id="live" class="sr-only" aria-live="polite"></p>
+  <footer class="foot">
+    <div class="shell">
+      <span>HenryHwang-AI · 作品集演示 · 品牌、数字与样本均为虚构 · 不构成投放建议或法律意见</span>
+      <span>MIT License</span>
+    </div>
+  </footer>
+  <noscript><p class="shell">需要启用 JavaScript。本页不请求网络。</p></noscript>
+  <script src="js/model.js"></script>
+  <script src="js/warroom.js"></script>
+</body>
+</html>
